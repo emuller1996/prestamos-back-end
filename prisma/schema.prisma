@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Clientes {
+  id                Int         @id @default(autoincrement())
+  nombre            String
+  numero_telefonico String
+  estado            String?
+  deuda_actual      Float?
+  createdAt         DateTime    @default(now())
+  Prestamos         Prestamos[]
+}
+
+model Prestamos {
+  id                Int       @id @default(autoincrement())
+  valor_prestamo    Float
+  valor_pagado      Float?
+  deuda_actual      Float?
+  deuda_capital     Float?
+  deuda_interes     Float?
+  estado            String?   @default("Pendiente")
+  pago_interes      Float?
+  fecha_ultimo_pago DateTime?
+  fecha_pago        DateTime
+  createdAt         DateTime  @default(now())
+  cliente           Clientes  @relation(fields: [clientesId], references: [id])
+  clientesId        Int
+  Pagos             Pagos[]
+}
+
+model Pagos {
+  id            Int       @id @default(autoincrement())
+  valor_pagado  Float?
+  abono_capital Float?
+  abono_interes Float?
+  fecha_pago    DateTime?
+  createdAt     DateTime  @default(now())
+  prestamo      Prestamos @relation(fields: [prestamoId], references: [id])
+  prestamoId    Int
+}
